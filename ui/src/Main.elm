@@ -241,6 +241,9 @@ update msg model =
             case result of
                 Ok post ->
                     case model of
+                        SplashPage session ->
+                            ( PostPage session post, Cmd.none )
+
                         PostLoadingPage session ->
                             ( PostPage session post, Cmd.none )
 
@@ -249,6 +252,9 @@ update msg model =
 
                 Err _ ->
                     case model of
+                        SplashPage session ->
+                            ( PostFailedPage session, Cmd.none )
+
                         PostLoadingPage session ->
                             ( PostFailedPage session, Cmd.none )
 
