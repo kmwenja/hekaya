@@ -44,6 +44,20 @@ func postListApi(w http.ResponseWriter, r *http.Request) {
 			Author:      "rexxor",
 			Date:        "30th March 2019",
 		},
+		postEntry{
+			Id:          2,
+			Title:       "Hello Again!",
+			Description: "Second ever post on this blog",
+			Author:      "rexxor",
+			Date:        "17th April 2019",
+		},
+		postEntry{
+			Id:          3,
+			Title:       "Some stuff about frontends!",
+			Description: "Third ever post on this blog",
+			Author:      "rexxor",
+			Date:        "17th April 2019",
+		},
 	}
 	enc := json.NewEncoder(w)
 	if err := enc.Encode(&entries); err != nil {
@@ -72,5 +86,6 @@ func main() {
 	http.HandleFunc("/api/posts/1", postApi)
 	http.HandleFunc("/api/posts/", postListApi)
 	http.Handle("/", http.FileServer(ui))
+	log.Println("Listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -86,10 +86,19 @@ view : Model -> ( String, Html Msg )
 view model =
     case model of
         Loading ->
-            ( "Loading post", text "Loading" )
+            ( "Loading post", h1 [] [ text "Loading" ] )
 
         Failed ->
-            ( "Failed to load post", text "Failed" )
+            ( "Failed to load post", h1 [] [ text "Failed" ] )
 
         Success post ->
-            ( post.title, div [] [ text (String.fromInt post.id), text post.title, text post.body, text post.author, text post.date ] )
+            ( post.title
+            , div []
+                [ h1 [] [ text post.title ]
+                , text (String.fromInt post.id)
+                , text post.title
+                , text post.body
+                , text post.author
+                , text post.date
+                ]
+            )

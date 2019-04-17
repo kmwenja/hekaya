@@ -4,6 +4,7 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Lazy exposing (lazy)
 import Http
 import Post
 import PostList
@@ -166,53 +167,57 @@ update msg model =
 -- VIEW
 
 
-formatTitle : String -> String
-formatTitle title =
-    if String.length title > 0 then
-        title ++ "- Hekaya"
-
-    else
-        "Hekaya"
-
-
-pageView : Url.Url -> String -> Html Msg -> Browser.Document Msg
-pageView url title body =
-    { title = formatTitle title
-    , body = [ viewLinks, viewUrl url, body ]
-    }
-
-
 view : Model -> Browser.Document Msg
 view model =
     case model.page of
         BlankPage ->
-            pageView model.url "Not Found" (text "Not Found")
+            pageView "Not Found" (text "Not Found")
 
         PostListPage postListModel ->
             let
                 ( title, body ) =
                     PostList.view postListModel
             in
-            pageView model.url title (Html.map PostListMsg body)
+            pageView title (Html.map PostListMsg body)
 
         PostPage postModel ->
             let
                 ( title, body ) =
                     Post.view postModel
             in
-            pageView model.url title (Html.map PostMsg body)
+            pageView title (Html.map PostMsg body)
 
 
-viewUrl : Url.Url -> Html Msg
-viewUrl url =
-    div [] [ text "Url", text (Url.toString url) ]
+formatTitle : String -> String
+formatTitle title =
+    if String.length title > 0 then
+        title ++ " - Hekaya"
+
+    else
+        "Hekaya"
 
 
-viewLinks : Html Msg
-viewLinks =
-    ul []
-        [ li [] [ a [ href "/" ] [ text "/" ] ]
-        , li [] [ a [ href "/post/1" ] [ text "/post/1" ] ]
-        , li [] [ a [ href "/post/2" ] [ text "/post/2" ] ]
-        , li [] [ a [ href "/unknown" ] [ text "/unknown" ] ]
+pageView : String -> Html Msg -> Browser.Document Msg
+pageView title body =
+    { title = formatTitle title
+    , body =
+        [ viewHeader
+        , div [ class "container", class "mx-auto" ]
+            [ body
+            ]
+        ]
+    }
+
+
+viewHeader : Html Msg
+viewHeader =
+    div
+        [ class "flex", class "items-center" ]
+        [ div [ class "container", class "mx-auto", class "flex", class "flex-row", class "py-5" ]
+            [ a [ class "block", class "mr-5", href "/" ] [ text "Hekaya" ]
+            , ul [ class "inline-flex", class "flex-row", class "list-reset" ]
+                [ li [] [ a [ class "flex-1", class "block", class "mr-5", href "/" ] [ text "Posts" ] ]
+                , li [] [ a [ class "flex-1", class "block", class "mr-5", href "/write" ] [ text "Write" ] ]
+                ]
+            ]
         ]

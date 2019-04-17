@@ -1,5 +1,6 @@
 module PostList exposing (Model, Msg, init, update, view)
 
+import Components
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
@@ -113,32 +114,57 @@ view : Model -> ( String, Html Msg )
 view model =
     case model of
         Loading filters ->
-            ( "Loading Posts", div [] [ text "Loading", viewFilters filters ] )
+            ( "Loading Posts", pageView filters (div [ class "alert", class "alert-warning" ] [ text "Loading" ]) )
 
         Failed filters ->
-            ( "Failed to load posts", div [] [ text "Failed", viewFilters filters ] )
+            ( "Failed to load posts", pageView filters (div [ class "alert", class "alert-danger" ] [ text "Failed" ]) )
 
         Success filters postList ->
             ( "Posts"
-            , div []
-                [ viewFilters filters
-                , ul [] (List.map viewEntry postList)
-                ]
+            , pageView filters
+                (div []
+                    [ ul [ class "list-reset" ] (List.map viewEntry postList)
+                    ]
+                )
             )
 
 
-viewFilters : Filters -> Html Msg
-viewFilters filters =
+pageView : Filters -> Html Msg -> Html Msg
+pageView filters body =
     div []
-        [ text "Next"
-        , text filters.next
-        , text "Previous"
-        , text filters.prev
-        , text "Page Size"
-        , text (String.fromInt filters.pageSize)
+        [ div [ class "mb-4" ]
+            [ h3 [ class "mb-4" ] [ text "Posts" ]
+            , div [ class "flex" ]
+                [ input [ type_ "text", placeholder "Search", class "block", class "w-2/3", class "mr-4", class "bg-grey-lighter", class "appearance-none", class "border-2", class "border-grey-lighter", class "rounded", class "py-1", class "px-3", class "text-grey-darker", class "leading-tight", class "focus:outline-none", class "focus:bg-white", class "focus:border-green" ] []
+                , select []
+                    [ option [] [ text "Unread" ]
+                    , option [] [ text "Read" ]
+                    , option [] [ text "All" ]
+                    ]
+                ]
+            ]
+        , div [] [ body ]
+        , div [ class "inline-flex" ]
+            [ Components.button [ class "mr-2" ] [ text "Previous" ]
+            , Components.button [] [ text "Next" ]
+            ]
         ]
 
 
 viewEntry : PostEntry -> Html Msg
 viewEntry entry =
-    li [] [ text (String.fromInt entry.id), text entry.title, text entry.description, text entry.author, text entry.date ]
+    li []
+        [ div [ class "mb-4" ]
+            [ div []
+                [ a [ href (Builder.absolute [ "post", String.fromInt entry.id ] []) ] [ text entry.title ]
+                , text " - "
+                , text entry.description
+                ]
+            , div []
+                [ text " by "
+                , i [] [ text entry.author ]
+                , text " on "
+                , i [] [ text entry.date ]
+                ]
+            ]
+        ]
